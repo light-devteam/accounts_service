@@ -5,6 +5,7 @@ from src.enums.postgres import (
     PostgresUnaryLogicOperators,
     PostgresLocks,
 )
+from src.enums.registration_mode import RegistrationMode
 
 
 __all__ = [
@@ -13,4 +14,5 @@ __all__ = [
     'PostgresCompareOperators',
     'PostgresUnaryLogicOperators',
     'PostgresLocks',
+    'RegistrationMode',
 ]
