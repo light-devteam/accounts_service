@@ -15,7 +15,7 @@ class AccountsRepository:
         async with postgres.pool.acquire() as connection:
             account_records = await AccountsDAO.get(
                 connection,
-                ['id, telegram_id'],
+                ['*'],
                 EqualSpecification('id', account_id),
             )
         if not account_records:
@@ -28,7 +28,7 @@ class AccountsRepository:
         async with postgres.pool.acquire() as connection:
             account_records = await AccountsDAO.get(
                 connection,
-                ['id, telegram_id'],
+                ['*'],
                 EqualSpecification('telegram_id', telegram_id),
             )
         if not account_records:
@@ -41,19 +41,31 @@ class AccountsRepository:
         async with postgres.pool.acquire() as connection:
             account_records = await AccountsDAO.get(
                 connection,
-                ['id, telegram_id'],
+                ['*'],
                 page=page,
                 page_size=page_size,
             )
         return [AccountDTO(**account_record) for account_record in account_records]
 
     @classmethod
-    async def create_account(cls, telegram_id: int) -> UUID:
+    async def create_account(
+        cls,
+        telegram_id: int,
+        first_name: str,
+        last_name: str | None = None,
+        username: str | None = None,
+    ) -> UUID:
+        account_data = {
+            'telegram_id': telegram_id,
+            'username': username,
+            'first_name': first_name,
+            'last_name': last_name,
+        }
         async with postgres.pool.acquire() as connection:
             try:
                 accounts_data = await AccountsDAO.create(
                     connection,
-                    {'telegram_id': telegram_id},
+                    account_data,
                     ['id'],
                 )
             except UniqueViolationError:

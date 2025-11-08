@@ -15,6 +15,19 @@ class AccountAlreadyExistsException(AccountsBaseException):
     _DETAIL = 'Account already exists'
 
 
+class ReferralCodesBaseException(AccountsBaseException): ...
+
+
+class ReferralCodeNotFoundException(ReferralCodesBaseException):
+    _STATUS_CODE = status.HTTP_404_NOT_FOUND
+    _DETAIL = 'Referral code not found'
+
+
+class ReferralCodeAlreadyExistsException(ReferralCodesBaseException):
+    _STATUS_CODE = status.HTTP_409_CONFLICT
+    _DETAIL = 'Referral code already exists'
+
+
 class AuthDAOBaseException(AccountsBaseException): ...
 class DeleteAllRowsException(AuthDAOBaseException): ...
 class UpdateAllRowsException(AuthDAOBaseException): ...
