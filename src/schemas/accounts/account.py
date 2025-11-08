@@ -1,5 +1,6 @@
 from datetime import datetime
 from uuid import UUID
+from typing import Optional
 
 from pydantic import BaseModel, field_serializer
 
@@ -7,7 +8,7 @@ from pydantic import BaseModel, field_serializer
 class AccountSchema(BaseModel):
     id: UUID
     telegram_id: int
-    username: str | None
+    username: Optional[str] = None
     first_name: str
     last_name: str
     created_at: datetime

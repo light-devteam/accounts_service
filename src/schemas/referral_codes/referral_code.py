@@ -1,5 +1,6 @@
 from uuid import UUID
 from datetime import datetime
+from typing import Optional
 
 from pydantic import BaseModel, field_serializer
 
@@ -12,8 +13,8 @@ class ReferralCodeSchema(BaseModel):
     uses: int
     created_at: datetime
     is_available: bool
-    expires_at: datetime | None = None
-    target_telegram_id: int | None = None
+    expires_at: Optional[datetime] = None
+    target_telegram_id: Optional[int] = None
 
     @field_serializer(
         'created_at',

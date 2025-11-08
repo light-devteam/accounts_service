@@ -2,11 +2,12 @@ from uuid import UUID
 
 from asyncpg import UniqueViolationError
 
-from src.dao import AccountsDAO
+from src.dao import AccountsDAO, ReferralCodesDAO, ReferralsDAO
 from src.storages import postgres
 from src.specifications import EqualSpecification
 from src.dto import AccountDTO
 from src.exceptions import AccountNotFoundException, AccountAlreadyExistsException
+from src.enums import PostgresLocks
 
 
 class AccountsRepository:
@@ -54,20 +55,41 @@ class AccountsRepository:
         first_name: str,
         last_name: str | None = None,
         username: str | None = None,
+        referral_code: str | None = None,
     ) -> UUID:
-        account_data = {
+        account_creation_data = {
             'telegram_id': telegram_id,
             'username': username,
             'first_name': first_name,
             'last_name': last_name,
         }
         async with postgres.pool.acquire() as connection:
-            try:
-                accounts_data = await AccountsDAO.create(
-                    connection,
-                    account_data,
-                    ['id'],
-                )
-            except UniqueViolationError:
-                raise AccountAlreadyExistsException()
-        return UUID(str(accounts_data['id']))
+            async with connection.transaction():
+                try:
+                    account_data = await AccountsDAO.create(
+                        connection,
+                        account_creation_data,
+                        ['id'],
+                    )
+                except UniqueViolationError:
+                    raise AccountAlreadyExistsException()
+                if referral_code:
+                    referral_code_id = None
+                    referral_code_datas = await ReferralCodesDAO.get(
+                        connection,
+                        ['id'],
+                        EqualSpecification('code', referral_code),
+                        lock=PostgresLocks.FOR_KEY_SHARE,
+                    )
+                    if referral_code_datas:
+                        referral_code_id = referral_code_datas[0]['id']
+                    if referral_code_id:
+                        referral_data = {
+                            'account_id': account_data['id'],
+                            'referral_code_id': referral_code_id,
+                        }
+                        await ReferralsDAO.create(
+                            connection,
+                            referral_data,
+                        )
+        return UUID(str(account_data['id']))

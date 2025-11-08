@@ -12,4 +12,5 @@ async def create_account(creation_data: CreateAccountSchema) -> UUID:
         creation_data.first_name,
         creation_data.last_name,
         creation_data.username,
+        creation_data.referral_code,
     )

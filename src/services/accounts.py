@@ -20,12 +20,14 @@ class AccountsService:
         first_name: str,
         last_name: str | None = None,
         username: str | None = None,
+        referral_code: str | None = None,
     ) -> UUID:
         return await AccountsRepository.create_account(
             telegram_id,
             first_name,
             last_name,
             username,
+            referral_code,
         )
 
     @classmethod
