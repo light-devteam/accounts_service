@@ -53,7 +53,7 @@ class AccountsRepository:
         cls,
         telegram_id: int,
         first_name: str,
-        last_name: str | None = None,
+        last_name: str = '',
         username: str | None = None,
         referral_code: str | None = None,
     ) -> UUID:
@@ -93,3 +93,23 @@ class AccountsRepository:
                             referral_data,
                         )
         return UUID(str(account_data['id']))
+
+    @classmethod
+    async def update_telegram_data(
+        cls,
+        account_id: UUID,
+        first_name: str,
+        last_name: str = '',
+        username: str | None = None,
+    ) -> None:
+        account_update_data = {
+            'username': username,
+            'first_name': first_name,
+            'last_name': last_name,
+        }
+        async with postgres.pool.acquire() as connection:
+            await AccountsDAO.update(
+                connection,
+                account_update_data,
+                EqualSpecification('id', account_id),
+            )

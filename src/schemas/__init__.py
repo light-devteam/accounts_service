@@ -1,5 +1,5 @@
 from src.schemas.healthcheck import HealthCheck, HealthReport
-from src.schemas.accounts import AccountSchema, CreateAccountSchema
+from src.schemas.accounts import AccountSchema, CreateAccountSchema, UpdateTelegramDataSchema
 from src.schemas.referral_codes import CreateReferralCodeSchema, ReferralCodeSchema
 from src.schemas.referrals import ReferralSchema
 
@@ -12,4 +12,5 @@ __all__ = [
     'CreateReferralCodeSchema',
     'ReferralCodeSchema',
     'ReferralSchema',
+    'UpdateTelegramDataSchema',
 ]

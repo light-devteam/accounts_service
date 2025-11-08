@@ -33,3 +33,18 @@ class AccountsService:
     @classmethod
     async def get_all(cls, page: int = 1, page_size: int = 100) -> list[AccountDTO]:
         return await AccountsRepository.get_all(page, page_size)
+
+    @classmethod
+    async def update_telegram_data(
+        cls,
+        account_id: UUID,
+        first_name: str,
+        last_name: str = '',
+        username: str | None = None,
+    ) -> None:
+        await AccountsRepository.update_telegram_data(
+            account_id,
+            first_name,
+            last_name,
+            username,
+        )
