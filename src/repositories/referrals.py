@@ -12,7 +12,7 @@ class ReferralsRepository:
         cls,
         account_id: UUID,
         page: int = 1,
-        page_size: int = 10,
+        page_size: int = 100,
     ) -> list[ReferralDTO]:
         async with postgres.pool.acquire() as connection:
             referrals_records = await ReferralsDAO.get_account_referrals(

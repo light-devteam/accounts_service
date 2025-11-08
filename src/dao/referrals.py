@@ -25,7 +25,7 @@ class ReferralsDAO(BaseDAO):
             offset {offset}
             limit {page_size}
         """
-        return connection.fetch(query, account_id)
+        return await connection.fetch(query, account_id)
 
     @classmethod
     async def get_account_referrals_count(
@@ -39,7 +39,7 @@ class ReferralsDAO(BaseDAO):
             on rc.id = rr.referral_code_id
             where rc.account_id = $1
         """
-        val = connection.fetchval(query, account_id)
+        val = await connection.fetchval(query, account_id)
         if val is None:
             val = 0
         return val
