@@ -1,12 +1,12 @@
 from uuid import UUID
 
-from asyncpg import UniqueViolationError
+from asyncpg import UniqueViolationError, RaiseError
 
 from src.dao import AccountsDAO, ReferralCodesDAO, ReferralsDAO
 from src.storages import postgres
 from src.specifications import EqualSpecification
 from src.dto import AccountDTO
-from src.exceptions import AccountNotFoundException, AccountAlreadyExistsException
+from src.exceptions import AccountNotFoundException, AccountAlreadyExistsException, ReferralCodeNotFoundException
 from src.enums import PostgresLocks
 
 
@@ -88,10 +88,14 @@ class AccountsRepository:
                             'account_id': account_data['id'],
                             'referral_code_id': referral_code_id,
                         }
-                        await ReferralsDAO.create(
-                            connection,
-                            referral_data,
-                        )
+                        try:
+                            await ReferralsDAO.create(
+                                connection,
+                                referral_data,
+                            )
+                        except RaiseError as error:
+                            if error.args[0].startswith('Referral'):
+                                raise ReferralCodeNotFoundException()
         return UUID(str(account_data['id']))
 
     @classmethod
